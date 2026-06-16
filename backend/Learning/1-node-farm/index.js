@@ -1,5 +1,6 @@
 const fs = require('fs');
 const http = require('http');
+const url = require('url');
 
 /****************************
  ******** SECTION 2 *********
@@ -37,10 +38,32 @@ const http = require('http');
 // console.log('Will read file!');
 
 /* --------- SERVER (part 11) ---------  */
+const data = fs.readFileSync(
+  `${__dirname}/starter/dev-data/data.json`,
+  'utf-8',
+);
+const dataObject = JSON.parse(data);
 
 const server = http.createServer((req, res) => {
+  //console.log(req.url);
   //console.log(req);
-  res.end('Hello from the server!');
+
+  // routing
+  const pathName = req.url;
+  if (pathName === '/' || pathName === '/overview') {
+    res.end('This is the OVERVIEW');
+  } else if (pathName === '/product') {
+    res.end('This is the PRODUCT');
+  } else if (pathName === '/api') {
+    res.writeHead(200, { 'content-type': 'application/json' });
+    res.end(data);
+  } else {
+    res.writeHead(404, {
+      'Content-type': 'text/html',
+      'my-own-header': 'hello-world',
+    });
+    res.end('<h1>Page not found. Sorry.</h1>');
+  }
 });
 
 // here, the second arg is optional and would default to localhost with usually IP address: '127.0.0.1'
