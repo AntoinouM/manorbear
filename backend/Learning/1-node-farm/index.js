@@ -84,11 +84,13 @@ const server = http.createServer((req, res) => {
   //console.log(req.url);
   //console.log(req);
 
+  const { query, pathname } = url.parse(req.url, true);
+
   // routing
-  const pathName = req.url;
+  //const pathName = req.url;
 
   // Overview page
-  if (pathName === '/' || pathName === '/overview') {
+  if (pathname === '/' || pathname === '/overview') {
     res.writeHead(200, { 'content-type': 'text/html' });
 
     const cardsHtml = dataObject
@@ -101,16 +103,20 @@ const server = http.createServer((req, res) => {
     res.end(output);
 
     // Product page
-  } else if (pathName === '/product') {
-    res.end('This is the PRODUCT');
+  } else if (pathname === '/product') {
+    res.writeHead(200, { 'content-type': 'text/html' });
+    const product = dataObject[query.id];
+    const output = replaceTemplate(templateProduct, product);
+
+    res.end(output);
 
     // API
-  } else if (pathName === '/api') {
+  } else if (pathname === '/api') {
     res.writeHead(200, { 'content-type': 'application/json' });
     res.end(data);
 
     // WBL
-  } else if (pathName === '/wbl') {
+  } else if (pathname === '/wbl') {
     const dataWBL = [];
     fs.createReadStream(`./starter/dev-data/Pay-Table 1.csv`)
       .pipe(csv({ separator: ';' }))
