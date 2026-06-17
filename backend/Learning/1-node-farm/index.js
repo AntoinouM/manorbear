@@ -44,6 +44,9 @@ const data = fs.readFileSync(
 );
 const dataObject = JSON.parse(data);
 
+// project manorbear tryout
+const csv = require('csv-parser');
+
 const server = http.createServer((req, res) => {
   //console.log(req.url);
   //console.log(req);
@@ -57,6 +60,17 @@ const server = http.createServer((req, res) => {
   } else if (pathName === '/api') {
     res.writeHead(200, { 'content-type': 'application/json' });
     res.end(data);
+  } else if (pathName === '/wbl') {
+    const dataWBL = [];
+    fs.createReadStream(`./starter/dev-data/Pay-Table 1.csv`)
+      .pipe(csv({ separator: ';' }))
+      .on('data', (row) => {
+        dataWBL.push(row);
+      })
+      .on('end', () => {
+        res.writeHead(200, { 'content-type': 'application/json' });
+        res.end(JSON.stringify(dataWBL, null, 2));
+      });
   } else {
     res.writeHead(404, {
       'Content-type': 'text/html',
