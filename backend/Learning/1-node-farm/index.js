@@ -38,6 +38,39 @@ const url = require('url');
 // console.log('Will read file!');
 
 /* --------- SERVER (part 11) ---------  */
+
+// helper function
+const replaceTemplate = (template, product) => {
+  let output = template.replace(/{%PRODUCT_NAME%}/g, product.productName);
+  output = output.replace(/{%IMAGE%}/g, product.image);
+  output = output.replace(/{%PRICE%}/g, product.price);
+  output = output.replace(/{%FROM%}/g, product.from);
+  output = output.replace(/{%NUTRIENTS%}/g, product.nutrients);
+  output = output.replace(/{%QUANTITY%}/g, product.quantity);
+  output = output.replace(/{%DESCRIPTION%}/g, product.description);
+  output = output.replace(/{%ID%}/g, product.id);
+
+  if (!product.organic)
+    output = output.replace(/{%NOT_ORGANIC%}/g, 'not-organic');
+
+  return output;
+};
+
+// Put template in memory to avoid reading it from disk every time a request is made
+const templateOverview = fs.readFileSync(
+  `${__dirname}/starter/templates/template_overview.html`,
+  'utf-8',
+);
+const templateCard = fs.readFileSync(
+  `${__dirname}/starter/templates/template_card.html`,
+  'utf-8',
+);
+const templateProduct = fs.readFileSync(
+  `${__dirname}/starter/templates/template_product.html`,
+  'utf-8',
+);
+
+// put the data in memory to avoid reading it from disk every time a request is made
 const data = fs.readFileSync(
   `${__dirname}/starter/dev-data/data.json`,
   'utf-8',
@@ -53,13 +86,30 @@ const server = http.createServer((req, res) => {
 
   // routing
   const pathName = req.url;
+
+  // Overview page
   if (pathName === '/' || pathName === '/overview') {
-    res.end('This is the OVERVIEW');
+    res.writeHead(200, { 'content-type': 'text/html' });
+
+    const cardsHtml = dataObject
+      .map((element) => {
+        return replaceTemplate(templateCard, element);
+      })
+      .join('');
+    const output = templateOverview.replace('{%PRODUCT_CARDS%}', cardsHtml);
+
+    res.end(output);
+
+    // Product page
   } else if (pathName === '/product') {
     res.end('This is the PRODUCT');
+
+    // API
   } else if (pathName === '/api') {
     res.writeHead(200, { 'content-type': 'application/json' });
     res.end(data);
+
+    // WBL
   } else if (pathName === '/wbl') {
     const dataWBL = [];
     fs.createReadStream(`./starter/dev-data/Pay-Table 1.csv`)
@@ -71,6 +121,8 @@ const server = http.createServer((req, res) => {
         res.writeHead(200, { 'content-type': 'application/json' });
         res.end(JSON.stringify(dataWBL, null, 2));
       });
+
+    // Not found
   } else {
     res.writeHead(404, {
       'Content-type': 'text/html',
