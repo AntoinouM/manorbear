@@ -2,5 +2,15 @@
   "dependencies": {
     "csv-parser": "^3.2.1",
     "read-excel-file": "^9.2.0"
-  }
+  },
+  "name": "node-farm",
+  "version": "1.0.0",
+  "description": "Learning node.js",
+  "main": "index.js",
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Antoine Muneret",
+  "license": "ISC"
 }
