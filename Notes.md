@@ -18,3 +18,5 @@ The 2 types of package you can install are:
   usually tools for development like testing, linters, etc. Not needed in production.
   Package are added in the package.json file under devDependencies.
   //nodemon is a dev dependency because it is only used in development to automatically restart the server when file changes are detected.
+
+When installing a dependency, you can add the flag --global to install it globally on your system. This allows you to use the package from the command line anywhere on your machine. For example, npm install -g nodemon will install nodemon globally, allowing you to run nodemon from any directory in your terminal.
